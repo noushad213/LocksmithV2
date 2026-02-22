@@ -1,17 +1,16 @@
-import getpass
-import sys
 import string
 import math
 import hashlib
 import urllib.request
 
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 SYMBOL_SET = "!@#$%^&*()-_=+[]{};:'\",.<>/?\\|`~"
 LEETSPEAK_SET = set("@4310$!")
 
-ONLINE_GUESSES_PER_SECOND = 100 / 3600
 OFFLINE_GUESSES_PER_SECOND = 10_000_000_000
 
-HOUR = 3600
 DAY = 86400
 YEAR = 31_536_000
 CENTURY = YEAR * 100
@@ -48,15 +47,12 @@ def analyze_password(password):
     has_sequences = detect_sequences(password)
     has_leetspeak = detect_leetspeak(password)
 
-    # Entropy
     base_entropy = length * math.log2(charset_size) if charset_size else 0
     adjusted_entropy, penalties = apply_entropy_penalties(
         base_entropy, length, unique_char_count, has_sequences
     )
 
-    online_time = estimate_crack_time(adjusted_entropy, ONLINE_GUESSES_PER_SECOND)
-    offline_time = estimate_crack_time(adjusted_entropy, OFFLINE_GUESSES_PER_SECOND)
-
+    crack_time = estimate_crack_time(adjusted_entropy, OFFLINE_GUESSES_PER_SECOND)
     verdict = classify_verdict(adjusted_entropy)
 
     recommendations = generate_recommendations(
@@ -71,11 +67,11 @@ def analyze_password(password):
         "has_sequences": has_sequences,
         "has_leetspeak": has_leetspeak,
         "entropy": round(adjusted_entropy, 2),
-        "crack_time": offline_time,
+        "crack_time": crack_time,
         "verdict": verdict,
         "penalties": penalties,
         "recommendations": recommendations,
-        "breached": check_breach(password)
+        "breached": check_breach(password),
     }
 
 
@@ -193,67 +189,34 @@ def generate_recommendations(verdict, length, has_sequences, has_leetspeak, entr
     recs = []
 
     if length < 14:
-        recs.append("Increase length to at least 14 characters")
+        recs.append("Use at least 14 characters")
 
     if has_sequences:
-        recs.append("Avoid predictable sequences")
+        recs.append("Avoid predictable sequences like abc or 123")
 
     if has_leetspeak:
         recs.append("Avoid leetspeak substitutions")
 
     if entropy < 60:
-        recs.append("Increase randomness in character placement")
+        recs.append("Add more variety to character placement")
 
     return recs[:3]
 
 
-# -------------------- PRESENTATION --------------------
+# -------------------- FLASK API --------------------
 
-def print_analysis(a):
-    print("\n🔒 Password Analysis")
-    print("-------------------")
-    print(f"Length            : {a['length']}")
-    print(f"Character sets    : {', '.join(a['char_sets'])}")
-    print(f"Entropy           : {a['entropy']} bits")
-    print(f"Estimated crack   : {a['crack_time']}")
-    print(f"Breach status     : {'FOUND' if a['breached'] else 'Not found'}")
-    print(f"\nVerdict           : {a['verdict']}")
+app = Flask(__name__)
+CORS(app)
 
-    if a["verdict"] in ("STRONG", "VERY STRONG") and not a["breached"]:
-        print("\nNo improvements required.")
-        return
-
-    print("\nIssues Detected")
-    print("---------------")
-    for p in a["penalties"]:
-        print(f"- {p}")
-
-    if a["has_leetspeak"]:
-        print("- Predictable leetspeak substitutions detected")
-
-    if a["breached"]:
-        print("- Password found in known data breaches")
-
-    if a["recommendations"]:
-        print("\nHow to Improve")
-        print("--------------")
-        for r in a["recommendations"]:
-            print(f"- {r}")
-
-
-# -------------------- ENTRY --------------------
-
-def main():
-    try:
-        password = getpass.getpass("Enter your password: ")
-        analysis = analyze_password(password)
-        print_analysis(analysis)
-    except KeyboardInterrupt:
-        sys.exit(0)
-    except Exception:
-        print("An unexpected error occurred.")
-        sys.exit(1)
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    data = request.get_json()
+    password = data.get("password", "")
+    if not password:
+        return jsonify({"error": "No password provided"}), 400
+    result = analyze_password(password)
+    return jsonify(result)
 
 
 if __name__ == "__main__":
-    main()
+    app.run(port=5000, debug=True)
