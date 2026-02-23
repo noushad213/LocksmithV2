@@ -180,7 +180,7 @@ export default function App() {
           <div style={{
             display: "flex",
             flexDirection: wide ? "row" : "column",
-            alignItems: wide ? "flex-end" : "flex-start",
+            alignItems: wide ? "flex-start" : "flex-start",
             justifyContent: "space-between",
             gap: 20, marginBottom: wide ? 48 : 32,
           }}>
@@ -193,10 +193,11 @@ export default function App() {
                 textTransform: "uppercase", marginBottom: 10 }}>
                 Password Strength Analyzer
               </p>
-              <p style={{ fontSize: 14, color: P.muted, maxWidth: 320, lineHeight: 1.6 }}>
-                Analyze entropy, detect patterns, and check against known data breaches.
-              </p>
             </div>
+            <p style={{ fontSize: 14, color: P.muted, maxWidth: 320, lineHeight: 1.6,
+              textAlign: wide ? "right" : "left", marginTop: 14 }}>
+              Analyze entropy, detect patterns, and check against known data breaches.
+            </p>
           </div>
 
           {/* Input */}
