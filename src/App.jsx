@@ -212,7 +212,7 @@ export default function App() {
               style={{
                 width: "100%",
                 background: "#fff",
-                border: `1px solid ${borderColorFromEntropy(result?.entropy)}`,
+                border: `1px solid ${P.text}`,
                 borderRadius: 12,
                 padding: wide ? "18px 80px 18px 22px" : "15px 70px 15px 18px",
                 fontSize: wide ? 18 : 15,
@@ -221,8 +221,6 @@ export default function App() {
                 letterSpacing: password ? "0.07em" : "normal",
                 transition: "border-color 0.15s",
               }}
-              onFocus={e => e.target.style.borderColor = P.text}
-              onBlur={e  => e.target.style.borderColor = borderColorFromEntropy(result?.entropy)}
             />
             <div style={{ position: "absolute", right: 18, top: "50%",
               transform: "translateY(-50%)", display: "flex",
@@ -247,7 +245,7 @@ export default function App() {
           )}
 
           {result && (
-            <div className="appear" style={{ maxWidth: wide ? 600 : "100%", marginTop: 20 }}>
+            <div className="appear" style={{ maxWidth: wide ? 600 : "100%", margin: "20px auto 0" }}>
               <ScoreBar entropy={result.entropy} verdict={result.verdict} />
             </div>
           )}
@@ -353,7 +351,7 @@ export default function App() {
       {/* Empty state */}
       {!password && !loading && (
         <Container style={{ paddingTop: wide ? 80 : 52, paddingBottom: wide ? 80 : 52 }}>
-          <p style={{ color: P.border, fontSize: 13, fontFamily: "'DM Mono',monospace" }}>
+          <p style={{ color: P.border, fontSize: 13, fontFamily: "'DM Mono',monospace", textAlign: "center" }}>
             Waiting for input…
           </p>
         </Container>
