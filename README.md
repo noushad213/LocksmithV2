@@ -1,6 +1,6 @@
 # 🔐 Locksmith v2
 
-> A web-based UI for [Locksmith](https://github.com), the terminal password strength analyzer — now with a live React frontend and a Python backend API.
+> A web-based UI for [Locksmith](https://github.com/noushad213/Locksmith), the terminal password strength analyzer — now with a live React frontend and a Python backend API.
 
 ---
 
