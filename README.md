@@ -29,11 +29,11 @@ Locksmith started as a terminal tool for analyzing password strength. You'd run 
 ### Architecture
 
 ```
-┌─────────────────────┐        HTTP (localhost)       ┌──────────────────────┐
+┌─────────────────────┐       HTTP (localhost)        ┌──────────────────────┐
 │   React Frontend    │  ──── POST /analyze ────>     │   Python Backend     │
 │   (Vite + JSX)      │  <─── JSON response ────      │   (Flask API)        │
-│   localhost:5173    │                                │   localhost:5000     │
-└─────────────────────┘                                └──────────────────────┘
+│   localhost:5173    │                               │   localhost:5000     │
+└─────────────────────┘                               └──────────────────────┘
 ```
 
 ### Entropy calculation
