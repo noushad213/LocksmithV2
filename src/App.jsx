@@ -16,6 +16,14 @@ function verdictColor(verdict) {
   return P.text;
 }
 
+function borderColorFromEntropy(entropy) {
+  if (!entropy) return P.border;
+  if (entropy < 30) return P.red;
+  if (entropy < 60) return "#ff8c00";
+  if (entropy < 90) return "#ffd700";
+  return "#22c55e";
+}
+
 function verdictLabel(verdict) {
   if (!verdict) return "";
   return verdict.charAt(0) + verdict.slice(1).toLowerCase().replace("_", " ");
@@ -44,7 +52,7 @@ function ScoreBar({ entropy, verdict }) {
   const color = verdictColor(verdict);
   const label = verdictLabel(verdict);
   return (
-    <div>
+    <div style={{ border: `2px solid ${borderColorFromEntropy(entropy)}`, borderRadius: 12, padding: 16, transition: "border-color 0.15s" }}>
       <div style={{ display: "flex", justifyContent: "space-between",
         alignItems: "baseline", marginBottom: 12, gap: 8 }}>
         <span style={{ fontSize: 14, color: P.muted }}>Strength</span>
@@ -177,23 +185,22 @@ export default function App() {
             gap: 20, marginBottom: wide ? 48 : 32,
           }}>
             <div>
-              <p style={{ fontSize: 12, color: P.muted, letterSpacing: "0.12em",
-                textTransform: "uppercase", marginBottom: 10 }}>
-                Security Tool
-              </p>
               <h1 style={{ fontSize: wide ? 44 : 28, fontWeight: 600,
                 letterSpacing: "-0.03em", lineHeight: 1.1 }}>
-                Password Strength
+                Locksmith
               </h1>
+              <p style={{ fontSize: 12, color: P.muted, letterSpacing: "0.12em",
+                textTransform: "uppercase", marginBottom: 10 }}>
+                Password Strength Analyzer
+              </p>
+              <p style={{ fontSize: 14, color: P.muted, maxWidth: 320, lineHeight: 1.6 }}>
+                Analyze entropy, detect patterns, and check against known data breaches.
+              </p>
             </div>
-            <p style={{ fontSize: 14, color: P.muted, maxWidth: 320, lineHeight: 1.6,
-              textAlign: wide ? "right" : "left" }}>
-              Analyze entropy, detect patterns, and check against known data breaches.
-            </p>
           </div>
 
           {/* Input */}
-          <div style={{ position: "relative", maxWidth: wide ? 600 : "100%" }}>
+          <div style={{ position: "relative", maxWidth: wide ? 600 : "100%", margin: "0 auto" }}>
             <input
               type={show ? "text" : "password"}
               value={password}
@@ -204,7 +211,7 @@ export default function App() {
               style={{
                 width: "100%",
                 background: "#fff",
-                border: `1px solid ${P.border}`,
+                border: `1px solid ${borderColorFromEntropy(result?.entropy)}`,
                 borderRadius: 12,
                 padding: wide ? "18px 80px 18px 22px" : "15px 70px 15px 18px",
                 fontSize: wide ? 18 : 15,
@@ -214,7 +221,7 @@ export default function App() {
                 transition: "border-color 0.15s",
               }}
               onFocus={e => e.target.style.borderColor = P.text}
-              onBlur={e  => e.target.style.borderColor = P.border}
+              onBlur={e  => e.target.style.borderColor = borderColorFromEntropy(result?.entropy)}
             />
             <div style={{ position: "absolute", right: 18, top: "50%",
               transform: "translateY(-50%)", display: "flex",
