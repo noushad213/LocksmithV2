@@ -113,8 +113,8 @@ locksmith-v2/
 ### 1. Clone or download the project
 
 ```bash
-git clone https://github.com/yourname/locksmith-v2.git
-cd locksmith-v2
+git clone https://github.com/noushad213/LocksmithV2
+cd locksmithV2
 ```
 
 ### 2. Install Python dependencies
